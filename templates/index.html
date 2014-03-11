@@ -1,0 +1,174 @@
+<!doctype html>
+<!-- <html class="no-js" lang="en" manifest="manifest.appcache"> -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/semantic.css')}}">
+		<script type="text/javascript" src="{{url_for('static',filename='javascript/jquery-1.11.0.min.js')}}"></script>
+		<script type="text/javascript" src="{{url_for('static',filename='javascript/semantic.js')}}"></script>
+
+	</head>
+	<body>
+		<audio id="matched-audio">
+			<source src="{{ url_for('static', filename='ipl.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<audio id="card-flick">
+			<source src="{{ url_for('static', filename='page-flip-01a.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<audio id="victory-song">
+			<source src="{{ url_for('static', filename='sppedish.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<div class="wrapper">
+			<div class="player-info">
+				<h2>Player Info</h2>
+				<div class="ui three column grid">
+					<div class="six wide column">
+						<div>
+						Player Name: <span id="player_name"></span>
+						<button class="mini ui button" id="new-player-name">new</button>
+						</div>
+					</div>
+					<div class="five wide column">
+						<button class="ui green button " id="save-button">Save</button>
+					</div>
+					<div class="three wide column">
+						<div>
+							Flips: <span id="card-flips">0</span>/<span id="max-flips">26</span>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="sideBox grow" id="card-box"></div>
+			<div class="ui small modal" id="win-modal">
+				<i class="close icon"></i>
+				<div class="header">
+					<h3>You Won</h3>
+				</div>
+				<div class="content">
+					<p>You have won! Do you want to play again?	</p>
+				</div>
+				<div class="actions">
+					<button class="ui negative button ">No</button>
+					<button class="ui positive right button"  onclick="playAgain()">Yes</button>
+				</div>
+			</div>
+			<div class="ui small modal" id="lost-modal">
+				<i class="close icon"></i>
+				<div class="header">
+					<h3>You Lost</h3>
+				</div>
+				<div class="content">
+					<p>Sorry you have reached the max flips of <span id="max-flip"></span>! 
+					Do you want to play again?
+					</p>
+				</div>
+				<div class="actions">
+					<button class="ui negative button" >No</button>
+					<button class="ui positive right button" onclick="playAgain()">Yes</button>
+				</div>
+			</div>
+			<div class="ui small modal" id="player-modal">
+				<div class="header">
+					<h3>Player Name</h3>
+				</div>
+			  
+				<div class="content">
+					<form class="ui fluid form" id="new-player-form">
+						<div class="two fields">
+						    <div class="field">
+						    	<label>First Name</label>
+						      	<input placeholder="First Name" type="text" name="fname">
+						    </div>
+						    <div class="field">
+						    	<label>Last Name</label>
+						      	<input placeholder="Last Name" type="text" name="lname">
+						    </div>
+					 	</div>
+						<div class="actions">
+							<input class="ui blue submit button" type="submit" value="Submit">						
+						</div>
+					</form>  	
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(document).ready(function(){		
+
+				var test = localStorage.getItem('card-deck');
+				if(test=== null)  {
+				    deck = generateRandDeck(createDeck());
+				    showDeck(deck);
+
+				    $('#player-modal').modal('setting', 'closable', false).modal('show');	
+
+				}
+				else{
+					fname = localStorage.getItem('player_fname');
+					lname = localStorage.getItem('player_lname');					
+					deck = JSON.parse(localStorage.getItem('card-deck'));
+					found_matches = JSON.parse(localStorage.getItem('found-cards'));
+  					card_flips = JSON.parse(localStorage.getItem('card-flips'));
+  					cards_selected_index = JSON.parse(localStorage.getItem('selected-cards'));
+
+  					showDeck(deck);
+
+  					for(var i=0;i<cards_selected_index.length;i++)
+  					{
+  						cards_selected.push(document.getElementById(cards_selected_index[i]));
+  					}
+
+					
+					turnFlipedCards(found_matches);
+					turnFlipedCards(cards_selected_index);
+					updatePlayerInfo();
+				}
+
+			});
+			$('#new-player-form').submit(function(event){
+				fname = $('input[name="fname"]').val();
+				lname = $('input[name="lname"]').val();
+				
+				updatePlayerInfo();
+				return false;
+				
+			});	
+
+			$('#new-player-name').click(function(){
+				$('#player-modal').modal('setting', 'closable', false).modal('show');
+	
+				localStorage.removeItem('player_fname');
+				localStorage.removeItem('player_lname');					
+				localStorage.removeItem('card-deck');
+				localStorage.removeItem('found-cards');
+				localStorage.removeItem('card-flips');
+				localStorage.removeItem('selected-cards');
+				$('#card-box').empty();
+				
+				found_matches = new Array();	
+				cards_selected_index = new Array();
+				cards_selected = new Array();
+				deck = generateRandDeck(createDeck());
+				showDeck(deck);				
+				card_flips = 0;				
+				updatePlayerInfo();
+
+
+			});
+
+			$('#save-button').click(function(){
+				localStorage.setItem('card-deck',JSON.stringify(deck));
+				localStorage.setItem('found-cards',JSON.stringify(found_matches));
+				localStorage.setItem('player_fname', fname);
+				localStorage.setItem('player_lname', lname);
+  				localStorage.setItem('card-flips', JSON.stringify(card_flips));
+  				cards_selected_index;
+  				localStorage.setItem('selected-cards',JSON.stringify(cards_selected_index));				
+			});			
+		</script>
+		<script src="{{ url_for('static', filename='cards.js') }}"></script>
+
+	</body>
+</html>

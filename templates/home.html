@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- <html class="no-js" lang="en" manifest="manifest.appcache"> -->
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+		<title>Cards</title>
+
+	</head>
+	  <body>
+	  	<div class="container">	  		
+	  		<div id="player_name">
+			  <p>Enter Player Name</p>
+			  <input type="text" name="name" id="uniqueID" value="value" /><br>
+			  <button onclick="player_name()">Save Name</button>
+			  <button><a href="/cards">Enter Game</a></button>
+			</div>
+		  
+		</div>
+		<script src="{{ url_for('static', filename='home.js') }}"></script>
+	  </body>
+	   
+
+</html>
