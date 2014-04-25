@@ -1,7 +1,7 @@
 * {margin: 0; padding: 0;}
  
 body {
-  background: #00a651;
+  background-image: url(../images/Epic-Backgrounds.jpg);
 }
 .sideBox{
 	width: 695px;
@@ -9,7 +9,14 @@ body {
 	margin-right: auto;
   float: right;
 }
- 
+.left-sideBox{
+  width: 478px;
+  float: left;
+  margin-left: 27px;
+}
+.player-info{
+  margin-left: 27px;
+}
 .card {
   position: relative;
   float: left;
@@ -111,10 +118,13 @@ div[class*='suit']:after {
 }
 
 .wrapper{
+  margin-top: 37px;
   margin-left: auto;
   margin-right: auto;
   width: 1200px;
   overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 44px;
 }
 .player-info
 {
@@ -126,4 +136,11 @@ div[class*='suit']:after {
 {
   margin-bottom: 10px;
 
+}
+.game-area{
+  margin-top: 43px;
+
+}
+.game-control-area{
+  margin-left: 24px;
 }

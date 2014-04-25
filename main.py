@@ -18,10 +18,15 @@ def hello(name=None):
   """ Return hello template at application root URL."""
   return render_template('index.html', name=name)
 
-@app.route('/me')
-def me(name=None):
+@app.route('/single')
+def single(name=None):
   """ Return me template at application /me URL."""
-  return render_template('me.html', name=name)
+  return render_template('single.html', name=name)
+
+@app.route('/multi')
+def multi(name=None):
+  """ Return me template at application /me URL."""
+  return render_template('multi.html', name=name)
 
 
 

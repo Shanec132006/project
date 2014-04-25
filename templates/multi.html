@@ -1,0 +1,265 @@
+<!doctype html>
+<html class="no-js" ><!--lang="en" manifest="manifest.appcache"-->
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/semantic.css')}}">
+		<script type="text/javascript" src="{{url_for('static',filename='javascript/jquery-1.11.0.min.js')}}"></script>
+		<script type="text/javascript" src="{{url_for('static',filename='javascript/semantic.js')}}"></script>
+
+	</head>
+	<body onload="play()">
+		<audio id="matched-audio">
+			<source src="{{ url_for('static', filename='Ding.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<audio id="card-flick">
+			<source src="{{ url_for('static', filename='page-flip-01a.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<audio id="victory-song">
+			<source src="{{ url_for('static', filename='sppedish.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<audio id="background-song">
+			<source src="{{ url_for('static', filename='Background.mp3') }}"></source>
+			Your browser does not support HTML5 audio
+		</audio>
+		<div class="wrapper">
+			<h1 class="ui center aligned header">Multi Player</h1>
+			<div class="game-area">
+				<div class="left-sideBox">
+					<h2>Player One</h2>
+					<br>
+					<div>
+						Name: <span id="player1_name"></span>
+					</div>
+					<div class="hidden" id="player1-matches-area">
+						Current Score: <span id="player1-matches"></span>
+					</div>
+					<h2>Player Two</h2>
+					<br>
+					<div>
+						Name: <span id="player2_name"></span>
+					</div>
+					<div >
+						Current Score: <span id="player2-matches"></span>
+					</div>
+				</div>
+				<div class="sideBox grow" id="card-box"></div>
+				
+					<div class="game-control-area">
+				
+				<button class="ui button blue" id="save-button">Save Game</button>
+			</div>
+			</div>
+			<div class="ui small modal" id="win-modal">
+				<i class="close icon"></i>
+				<div class="header">
+					<h3>You Won</h3>
+				</div>
+				<div class="content">
+					<p id="player-win-msg">You have won!</p>
+				</div>
+				
+			</div>
+			<div class="ui small modal" id="turn-modal">
+				<i class="close icon"></i>
+				<div class="header">
+					<h3>Next Player Turn</h3>
+				</div>
+				<div class="content">
+					<p><span id="player-turn-msg"></span></p>
+				</div>
+				<div class="actions">
+					<button class="ui negative positive button">OK</button>
+				</div>
+			</div>
+			<div class="ui small modal" id="lost-modal">
+				<i class="close icon"></i>
+				<div class="header">
+					<h3>You Lost</h3>
+				</div>
+				<div class="content">
+					<p>Sorry you have reached the max flips of <span id="max-flip"></span>! 
+					Do you want to play again?
+					</p>
+				</div>
+				<div class="actions">
+					<button class="ui negative button" >No</button>
+					<button class="ui positive right button" onclick="playAgain()">Yes</button>
+				</div>
+			</div>
+
+			<div class="ui small modal" id="menu-modal">
+				<div class="header">
+					<h3>Enter Players Info</h3>
+				</div>
+
+				<div class="content">
+				 	<div class="ui form hidden" id="two-new-player-form">
+						<div>
+					 		<label>Player one info </label>
+					 	</div>
+						<div class="two fields">
+						    <div class="field">
+						    	<label>First Name</label>
+						      	<input placeholder="First Name" type="text" name="fname">
+						    </div>
+						    <div class="field">
+						    	<label>Last Name</label>
+						      	<input placeholder="Last Name" type="text" name="lname">
+						    </div>
+					 	</div>
+					 	<div>
+					 		<lable>Player two info </lable>
+					 	</div>
+					 	<div class="two fields">
+						    <div class="field">
+						    	<label>First Name</label>
+						      	<input placeholder="First Name" type="text" name="second_fname">
+						    </div>
+						    <div class="field">
+						    	<label>Last Name</label>
+						      	<input placeholder="Last Name" type="text" name="second_lname">
+						    </div>
+					 	</div>
+					</div>	
+				</div>
+				<div class="modal-footer">
+					<button class="ui blue button hidden" id="start-button">Start Game</button>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(document).ready(function(){		
+
+				var test = localStorage.getItem('card-deck');
+				if(test=== null)  {
+				    deck = generateRandDeck(createDeck());
+				    showDeck(deck);
+
+				    $('#menu-modal')
+				    	.modal('setting', {
+						    closable  : false,
+						    transition: 'scale'
+
+						})
+				    	.modal('show');	
+
+				}
+				else{
+					fname[0] = localStorage.getItem('player_fname');
+					lname[0] = localStorage.getItem('player_lname');					
+					deck = JSON.parse(localStorage.getItem('card-deck'));
+					found_matches = JSON.parse(localStorage.getItem('found-cards'));
+  					card_flips = JSON.parse(localStorage.getItem('card-flips'));
+  					cards_selected_index = JSON.parse(localStorage.getItem('selected-cards'));
+
+  					showDeck(deck);
+
+  					for(var i=0;i<cards_selected_index.length;i++)
+  					{
+  						cards_selected.push(document.getElementById(cards_selected_index[i]));
+  					}
+
+
+					turnFlipedCards(found_matches);
+					turnFlipedCards(cards_selected_index);
+					updatePlayerInfo();
+				}
+
+			});
+			$('.ui.radio.checkbox')
+			  .checkbox()
+			;	
+			$('#next-button').click(function(event){
+				$('#select-player-mode').addClass("hidden");
+				$('#next-button').addClass("hidden");
+				$('#start-button').removeClass('hidden');
+
+				player_mode = $('#select-player-mode input[name="player_mode"]:checked').val();
+				if(player_mode==='single-player')
+				{
+					$('#menu-modal .header h3').text("Enter Player Info");
+					$('#new-player-form').removeClass("hidden");
+
+				}
+				else
+				{
+					$('#menu-modal .header h3').text("Enter Players Info");	
+					$('#two-new-player-form').removeClass("hidden");
+
+				}
+			});
+
+			$('#start-button').click(function(event){
+
+				$('#menu-modal').modal('hide');
+				$('#select-player-mode').removeClass("hidden");
+				$('#next-button').removeClass("hidden");
+				$('#start-button').addClass('hidden');
+				$('#menu-modal .header h3').text("Select Player Mode");
+				if(player_mode==='single-player')
+				{
+					$('#new-player-form').addClass("hidden");
+					fname[0] = $('#new-player-form input[name="fname"]').val();
+					lname[0] = $('#new-player-form input[name="lname"]').val();
+
+					$('#right-sideBox').addClass('hidden');
+					$('#player1-flips-area').removeClass('hidden');
+					$('#player1-matches-area').addClass('hidden');
+				}
+				else
+				{
+					$('#two-new-player-form').addClass("hidden");
+					fname[0] = $('#two-new-player-form input[name="fname"]').val();
+					lname[0] = $('#two-new-player-form input[name="lname"]').val();
+
+					fname[1] = $('#two-new-player-form input[name="second_fname"]').val();
+					lname[1] = $('#two-new-player-form input[name="second_lname"]').val();
+
+					$('#player1-flips-area').addClass('hidden');
+					$('.right-sideBox').removeClass('hidden');
+					$('#player1-matches-area').removeClass('hidden');
+				}
+
+				updatePlayerInfo();
+			});
+
+			$('#new-player-name').click(function(){
+				$('#menu-modal').modal('setting', 'closable', false).modal('show');
+
+				localStorage.removeItem('player_fname');
+				localStorage.removeItem('player_lname');					
+				localStorage.removeItem('card-deck');
+				localStorage.removeItem('found-cards');
+				localStorage.removeItem('card-flips');
+				localStorage.removeItem('selected-cards');
+				$('#card-box').empty();
+
+				found_matches = new Array();
+				player_matches=[0,0];
+				cards_selected_index = new Array();
+				cards_selected = new Array();
+				deck = generateRandDeck(createDeck());
+				showDeck(deck);				
+				card_flips = 0;				
+				updatePlayerInfo();
+
+
+			});
+
+			$('#save-button').click(function(){
+				localStorage.setItem('card-deck',JSON.stringify(deck));
+				localStorage.setItem('found-cards',JSON.stringify(found_matches));
+				localStorage.setItem('player_fname', fname);
+				localStorage.setItem('player_lname', lname);
+  				localStorage.setItem('card-flips', JSON.stringify(card_flips));
+  				cards_selected_index;
+  				localStorage.setItem('selected-cards',JSON.stringify(cards_selected_index));				
+			});			
+		</script>
+		<script src="{{ url_for('static', filename='multicards.js') }}"></script>
+
+	</body>
+</html>

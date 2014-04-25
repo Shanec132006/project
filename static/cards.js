@@ -5,12 +5,15 @@ var found_matches = new Array();
 var deck_size = 16;
 var max_card_flips = 2;
 var card_flips =0;
-var MAX_FLIP = 26;
+var MAX_FLIP = 24;
 var deck;
 var fname;
 var lname;
 
-
+function play(){
+  $("#background-song")[0].load();
+  $("#background-song")[0].play();
+}
 var createDeck = function() {
 // based on code from http://www.brainjar.com/js/cards/default2.asp
   var ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9",
